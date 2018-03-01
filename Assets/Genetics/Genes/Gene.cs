@@ -1,27 +1,28 @@
-﻿using System;
+﻿using UnityEngine;
+using System;
 
 namespace Genetics.Genes {
 
     [Serializable]
-    public class Gene : IMutatable {
+    public class Gene : ScriptableObject, IMutatable {
 
-        [UnityEngine.SerializeField]
-        string name;
-        public virtual string Name { get { return name; } protected set { name = value + (int)Dominance; } } //the name of this gene
-        [UnityEngine.SerializeField]
+        [SerializeField]
+        string _name;
+        public virtual string Name { get { return _name; } protected set { _name = value + (int)Dominance; } } //the name of this gene
+        [SerializeField]
         Dominance dominance;
         public virtual Dominance Dominance { get { return Dominance; } protected set { dominance = value; } } //the dominance of this gene (dominant or recessive)
-        [UnityEngine.Range(0f, 1f)]
-        [UnityEngine.SerializeField]
+        [Range(0f, 1f)]
+        [SerializeField]
         float mutationProbability;
         public virtual float MutationProbability { get; set; } //the probability that this gene will mutate
-        public virtual Random Random { get; set; } //a random number generator for probabilities
+        public virtual System.Random Random { get; set; } //a random number generator for probabilities
 
         public event Mutated OnMutationSucceeded;
         public event Mutated OnMutationFailed;
 
         public Gene(Dominance dominance, float mutationProbability) {
-            Random = new Random();
+            Random = new System.Random();
             Dominance = dominance;
             MutationProbability = mutationProbability;
         }
@@ -43,13 +44,13 @@ namespace Genetics.Genes {
     }
 
     [Serializable]
-    public class Gene<T> : Gene{
+    public class Gene<T> : Gene {
 
-        [UnityEngine.SerializeField]
+        [SerializeField]
         T val;
         public virtual T Value { get { return val; } protected set { val = value; } } //the value of this gene
 
-        public Gene(T value, Dominance dominance, float mutationProbability) : base(dominance,mutationProbability) {
+        public Gene(T value, Dominance dominance, float mutationProbability) : base(dominance, mutationProbability) {
             Value = value;
         }
 

@@ -8,6 +8,14 @@ namespace Genetics {
         Recessive
     }
 
+    [Serializable]
+    public enum Zygosity {
+        Homozygous,
+        Heterozygous,
+        Hemizygous,
+        Nullizygous
+    }
+
     public enum NucleotideBase {
         Adenine,
         Thymine,
