@@ -1,30 +1,33 @@
 ﻿using UnityEngine;
 using System;
+using UnityEditor;
 
 namespace Genetics.Genes {
 
     [Serializable]
     public class Gene : ScriptableObject, IMutatable {
 
-        [SerializeField]
-        string _name;
-        public virtual string Name { get { return _name; } protected set { _name = value + (int)Dominance; } } //the name of this gene
-        [SerializeField]
-        Dominance dominance;
-        public virtual Dominance Dominance { get { return Dominance; } protected set { dominance = value; } } //the dominance of this gene (dominant or recessive)
-        [Range(0f, 1f)]
-        [SerializeField]
-        float mutationProbability;
+        public virtual string Name { get; protected set; } //the name of this gene
+        public virtual object Value { get; protected set; }//the value of this gene
+        public virtual Zygosity Zygosity { get; protected set; } //the zygosity of this gene (heterozygous, homozygous, hemizygous)
+        public virtual Dominance Dominance { get; protected set; } //the dominance of this gene (dominant or recessive)
         public virtual float MutationProbability { get; set; } //the probability that this gene will mutate
-        public virtual System.Random Random { get; set; } //a random number generator for probabilities
+
+        protected virtual System.Random Random { get; set; } //a random number generator for probabilities
 
         public event Mutated OnMutationSucceeded;
         public event Mutated OnMutationFailed;
 
-        public Gene(Dominance dominance, float mutationProbability) {
-            Random = new System.Random();
+        public void OnEnable() { hideFlags = HideFlags.HideAndDontSave; }
+
+        public Gene(string name, object value, Zygosity zygosity, Dominance dominance, float mutationProbability) {
+
+            Name = name;
+            Value = value;
+            Zygosity = zygosity;
             Dominance = dominance;
             MutationProbability = mutationProbability;
+            Random = new System.Random();
         }
 
         public virtual bool Mutate() {
@@ -41,17 +44,30 @@ namespace Genetics.Genes {
             }
         }
 
+        public virtual void OnGUI() {
+            Name = EditorGUILayout.TextField(Name);
+            Value = EditorGUILayout.ObjectField((UnityEngine.Object)Value, typeof(object), false);
+            Zygosity = (Zygosity)EditorGUILayout.EnumPopup(Zygosity);
+            Dominance = (Dominance)EditorGUILayout.EnumPopup(Dominance);
+            MutationProbability = EditorGUILayout.Slider(MutationProbability, 0f, 1f);
+        }
+
     }
 
     [Serializable]
     public class Gene<T> : Gene {
 
-        [SerializeField]
-        T val;
-        public virtual T Value { get { return val; } protected set { val = value; } } //the value of this gene
+        public virtual new T Value { get; protected set; } //the value of this gene
+        public virtual Allele<T> Allele { get; protected set; }
 
-        public Gene(T value, Dominance dominance, float mutationProbability) : base(dominance, mutationProbability) {
+        public Gene(string name, T value, Zygosity zygosity, Dominance dominance, float mutationProbability) : base(name, value, zygosity, dominance, mutationProbability) {
             Value = value;
+            Allele = CreateInstance<Allele<T>>();
+            switch (zygosity) {
+                case Zygosity.Heterozygous: Allele = new Allele<T>(name, value, zygosity, (Dominance)Mathf.Abs((int)dominance - 1), mutationProbability); break;
+                case Zygosity.Homozygous: Allele = new Allele<T>(name, value, zygosity, dominance, mutationProbability); break;
+                default: break;
+            }
         }
 
     }

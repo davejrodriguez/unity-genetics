@@ -9,9 +9,8 @@ namespace Genetics.Genes {
         [SerializeField]
         Gradient mutationTolerance;
 
-        public ColorGene(Color _color) : this(_color, Dominance.Dominant, 0f) { }
-        public ColorGene(Color _color, Dominance _dominance) : this(_color, _dominance, 0f) { }
-        public ColorGene(Color _color, Dominance _dominance, float _mutationProbability) : base(_color, _dominance, _mutationProbability) {
+        public ColorGene(string _name, Color _color) : this(_name, _color, Zygosity.Homozygous, Dominance.Dominant, 0f) { }
+        public ColorGene(string _name, Color _color, Zygosity _zygosity, Dominance _dominance, float _mutationProbability) : base(_name, _color, _zygosity, _dominance, _mutationProbability) {
             OnMutationSucceeded += ColorGene_OnMutationSucceeded;
         }
 

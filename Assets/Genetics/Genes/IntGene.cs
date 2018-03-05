@@ -10,9 +10,8 @@ namespace Genetics.Genes {
         [UnityEngine.SerializeField]
         int mutationMaximum;
 
-        public IntGene(int _value) : this(_value, Dominance.Dominant, 0f) { }
-        public IntGene(int _value, Dominance _dominance) : this(_value, _dominance, 0f) { }
-        public IntGene(int _value, Dominance _dominance, float _mutationProbability) : base(_value, _dominance, _mutationProbability) {
+        public IntGene(string _name, int _value) : this(_name, _value, Zygosity.Homozygous, Dominance.Dominant, 0f) { }
+        public IntGene(string _name, int _value, Zygosity _zygosity, Dominance _dominance, float _mutationProbability) : base(_name, _value, _zygosity, _dominance, _mutationProbability) {
             OnMutationSucceeded += IntGene_OnMutationSucceeded;
         }
 
